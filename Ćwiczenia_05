@@ -1,1 +1,97 @@
+#Jakub Litwiak 18.11.2025
+####Ćwiczenie_05####
+cisy_df <- read.csv("cisy.csv",
+                    sep = ";")
+juncus <- read.csv("Juncus.csv")
+
+####1 Struktura danych####
+
+head(cisy_df)
+str(cisy_df)
+
+####2 Szukamy brakujących wartość NAs ####
+
+is.na(cisy_df) #czy jest NAs w całym  pliku 
+complete.cases(cisy_df) # czy są jakies wiersze w którym pojawiają sie brakujące wartości 
+
+sum(is.na(cisy_df)) # poilcz ile jest na 
+colSums(is.na(cisy_df)) # policzy ile jest brakujących wartosci we wszystkich kolumnach 
+which(is.na(cisy_df$elev)) # policz w którym wierszu jest wartosc NAs
+
+range(cisy_df$slope) # chcemy zakres nachylenia terenu 
+range(cisy_df$elev) #chcemy zakres elev 
+
+####3 Co robić gdy mamy brakujące wartosci NA ####
+## Usuwanie obserwacji
+
+cisy_clean <- cisy_df[complete.cases(cisy_df), ] # usuwa obserwacje z brakami danych, wybiera tylko te wiersze które zwracają wartości true
+cisy_clean2 <- cisy_df[-76,] 
+
+## Obliczanie wartosci sredniej 
+range(cisy_clean$elev)
+mean(cisy_clean$elev)
+
+cisy_NA <- cisy_df[!complete.cases(cisy_df), ] # wykrzyknik znakiem zaprzeczenie funkcji 
+####3.1 Co robić gdy mamy brakujące wartosci NA ####
+## Można zastąpić NA średnia, ale nie jest to metoda statystyczna
+
+cisy_clean_avg <- cisy_df
+cisy_clean_avg[76,]
+
+cisy_clean_avg$elev[is.na(cisy_clean_avg$elev)] <- mean(cisy_clean_avg$elev, na.rm = T) #na.rm oznacza usuniecie na
+cisy_clean_avg[76,]
+
+####4 Graficzne przedstawianie statystyk opisowych#### 
+hist(cisy_df$elev,
+     breaks = 20
+     )
+hist(cisy_df$radiation)
+##4.1 wykresy słupkowe
+str(cisy_df)
+table(cisy_df$pop)
+##4.2boxploty
+barplot(table(cisy_df$pop))
+boxplot(cisy_df$elev ~ cisy_df$pop)
+boxplot(elev ~ pop, data = cisy_df)
+
+boxplot(radiation ~ pop, data = cisy_df) 
+## 4.3 Wykres rozrzutu 
+plot(radiation ~ slope, data = cisy_df,
+     cex = 2,
+     pch = 10,
+     col = "red"
+     )
+
+Juncus_df <- read.csv("Juncus.csv")
+table(Juncus_df$species)
+par(oma = c(0, 13, 0, 0))
+
+barplot(table(Juncus_df$species),
+        horiz = T,
+        las = 1 
+        )
+?barplot
+par(oma = c(0, 0, 0, 0))
+
+plot(InflLgth ~ Height, Juncus_df )
+
+####5 Identyfikacja obserwacji odstające####
+## metoda wizulana
+hist(cisy_df$radiation)
+cisy_podzb <- cisy_df[cisy_df$radiation>40, ]
+hist(cisy_podzb$radiation)
+plot(radiation ~ elev, data = cisy_podzb)
+text(radiation ~ elev, cisy_podzb)
+
+#boxplots
+
+boxplot(cisy_df$radiation)
+boxplot.stats(cisy_df$radiation)
+
+#Zadanie 2 
+hist(cisy_df$adult_yew100)
+plot(cisy_df$adult_yew100)
+text(cisy_podzb2$adult_yew100)
+cisy_podzb2.1 <- cisy_podzb2[-75,]
+hist(cisy_podzb2$adult_yew100)
 
