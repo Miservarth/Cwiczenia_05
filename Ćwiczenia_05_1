@@ -1,0 +1,106 @@
+cisy_df <- read.table("cisy.csv",
+                      sep = ":")
+cisy_clean <- cisy_df[complete.cases(cisy_df),]
+cisy_clean2 <- cisy_clean[cisy_clean > 40,]
+
+#### 1. Testowanie normalności ####
+##1.1Metody wizualne 
+hist(cisy_clean$radiation)
+#install.packages("ggpubr")
+library(ggpubr)
+ggdensity(cisy_clean2$radiation)
+
+library(car)
+densityPlot(cisy_clean2$radiation)
+### g-g plot
+##base
+qqnorm(cisy_clean2$radiation)
+qqline(cisy_clean2$radiation, col = "red")
+
+## ggpubr
+ggqqplot(cisy_clean2$radiation)
+
+##car 
+qqPlot(cisy_clean2$radiation)
+
+##Test Shapiro-wilka
+
+shapiro.test(cisy_clean2$radiation)
+#jesli p <0,05 to wykres w tym przypadku nie jest normalny 
+
+#zadanie 5
+Juncus_df <- read.csv("Juncus.csv")
+#5.1 Metody wizualne
+ggdensity(Juncus_df$Height)
+ggqqplot(Juncus_df$InflLgth)
+qqPlot(Juncus_df$IntWidth)
+hist(Juncus_df$NoHeads)
+ggqqplot(Juncus_df$FlowHead)
+ggqqplot(Juncus_df$ExtLgth)
+ggqqplot(Juncus_df$ExtWidth)
+ggqqplot(Juncus_df$IntLgth)
+ggqqplot(Juncus_df$ExtWidth_1)
+ggqqplot(Juncus_df$ExtWidth_2)
+#5.2 Metody statystyczne 
+shapiro.test(Juncus_df$Height)
+shapiro.test(Juncus_df$InflLgth)
+shapiro.test(Juncus_df$IntWidth)
+shapiro.test(Juncus_df$NoHeads)
+
+#### 3. Tidyverse
+#install.packages('tidyverse')
+library(tidyverse) 
+### 3.1 wczytywanie danych readr
+drap1 <- read.csv("drapiezniki.csv") #dane są wczytane w formacie data.frame 
+drap2 <- read_csv("drapiezniki.csv") #dane są wczytane w formacie tible  
+
+is_tibble(drap2)
+
+irysy <- iris
+is_tibble(irysy) #false
+
+irysy <- as_tibble(irysy) # zmień plik na tible 
+is_tibble(irysy) #true
+
+drapezniki <- read_delim("drapiezniki.csv")
+str(drapezniki)
+glimpse(drapezniki) #ładniej przedstawia dane w konsoli
+
+table(drapezniki$species)
+
+barplot(sort(table(drapezniki$species)), decreasing = F,
+        horiz = T,
+        las = 1)
+#### Zadanie 5.2 
+cisy_reg <- read_delim("cisy.txt")
+juncus1 <- read_csv("Juncus.csv") 
+
+ex1 <- readxl::read_xlsx("cisy.xlsx")
+is_tibble(ex1)
+
+####4 dplyr ####
+
+select(drapezniki, species, 5:10)
+
+filter(drapezniki, species == "Canis lupus")
+
+filter(drapezniki, !is.na(decimalLatitude))
+
+## pipe ()
+
+# skladnia klasyczna 
+select(drapezniki, species, family, class)
+
+drapezniki %>%   #shift+ctrl+m
+  select(species, family, class, decimalLatitude, decimalLongitude) %>% 
+  filter(species == 'Lynx lynx') %>% 
+  filter(!is.na(decimalLatitude))
+
+drapezniki %>% 
+  filter(species == "Vulpes vulpes" & elevation > 300) # & znaczy i 
+
+drapezniki %>% 
+  filter(species == "Ursus arctos" | species == "Canis lupus" | species == "Lynx lynx") %>%  # | znaczy lub 
+  filter(elevation > 1000)
+
+  
